@@ -1,0 +1,60 @@
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">TaskFlow</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/dashboard" class="active">Dashboard</a>
+      <a routerLink="/todos">My Todos</a>
+    </nav>
+    <button class="btn btn-ghost" (click)="logout()">Logout</button>
+  </header>
+
+  <main class="content">
+    <section class="welcome-block">
+      <h1>Welcome back, {{ currentUser()?.firstName }} 👋</h1>
+      <p>Here's a snapshot of how your tasks are shaping up today.</p>
+    </section>
+
+    @if (loading()) {
+      <app-loading-spinner label="Loading your stats…"></app-loading-spinner>
+    } @else {
+      <section class="stats-grid">
+        <div class="stat-card card">
+          <span class="stat-label">Total todos</span>
+          <span class="stat-value">{{ stats().total }}</span>
+          <span class="stat-mark total-mark"></span>
+        </div>
+        <div class="stat-card card">
+          <span class="stat-label">Completed</span>
+          <span class="stat-value">{{ stats().completed }}</span>
+          <span class="stat-mark success-mark"></span>
+        </div>
+        <div class="stat-card card">
+          <span class="stat-label">Pending</span>
+          <span class="stat-value">{{ stats().pending }}</span>
+          <span class="stat-mark accent-mark"></span>
+        </div>
+      </section>
+
+      <section class="progress-card card">
+        <div class="progress-header">
+          <span>Overall completion</span>
+          <span class="progress-percent">{{ completionRate }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="completionRate"></div>
+        </div>
+      </section>
+    }
+
+    <section class="cta-card card">
+      <div>
+        <h3>Ready to tackle your list?</h3>
+        <p>Create, search, filter and organize every todo in one place.</p>
+      </div>
+      <a class="btn btn-primary" routerLink="/todos">Go to My Todos</a>
+    </section>
+  </main>
+</div>

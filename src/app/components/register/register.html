@@ -1,0 +1,79 @@
+<div class="auth-page">
+  <div class="auth-card card">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">TaskFlow</span>
+    </div>
+
+    <h1>Create your account</h1>
+    <p class="subtitle">Start organizing your day in a couple of minutes.</p>
+
+    @if (errorMessage()) {
+      <div class="alert-error">{{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="name-row">
+        <div class="field">
+          <label for="firstName">First name</label>
+          <input id="firstName" type="text" formControlName="firstName" placeholder="Jane" autocomplete="given-name">
+          @if (f.firstName.invalid && f.firstName.touched) {
+            <span class="error-text">First name is required</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last name</label>
+          <input id="lastName" type="text" formControlName="lastName" placeholder="Doe" autocomplete="family-name">
+          @if (f.lastName.invalid && f.lastName.touched) {
+            <span class="error-text">Last name is required</span>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="you@example.com" autocomplete="email">
+        @if (f.email.invalid && f.email.touched) {
+          <span class="error-text">
+            @if (f.email.errors?.['required']) { Email is required }
+            @if (f.email.errors?.['email']) { Enter a valid email address }
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" placeholder="••••••••" autocomplete="new-password">
+        @if (f.password.invalid && f.password.touched) {
+          <span class="error-text">
+            @if (f.password.errors?.['required']) { Password is required }
+            @if (f.password.errors?.['weakPassword']) {
+              Min. 8 characters with uppercase, lowercase, number and special character
+            }
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Confirm password</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="••••••••" autocomplete="new-password">
+        @if (f.confirmPassword.touched && form.errors?.['passwordMismatch']) {
+          <span class="error-text">Passwords do not match</span>
+        }
+      </div>
+
+      <button class="btn btn-primary submit-btn" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <app-loading-spinner [size]="18" [inline]="true"></app-loading-spinner>
+        } @else {
+          Create account
+        }
+      </button>
+    </form>
+
+    <p class="switch-auth">
+      Already have an account? <a routerLink="/login">Sign in</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal-card card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditMode ? 'Edit todo' : 'New todo' }}</h2>
+      <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close">&times;</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="field">
+        <label for="title">Title</label>
+        <input id="title" type="text" formControlName="title" placeholder="e.g. Finish project proposal" autocomplete="off">
+        @if (f.title.invalid && f.title.touched) {
+          <span class="error-text">Title is required</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" placeholder="Add more detail (optional)"></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="dueDate">Due date</label>
+          <input id="dueDate" type="date" formControlName="dueDate">
+        </div>
+
+        <div class="field">
+          <label for="priority">Priority</label>
+          <select id="priority" formControlName="priority">
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status">
+            <option value="PENDING">Pending</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          {{ saving ? 'Saving…' : (isEditMode ? 'Save changes' : 'Create todo') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

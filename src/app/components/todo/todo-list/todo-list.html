@@ -1,0 +1,133 @@
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">TaskFlow</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/todos" class="active">My Todos</a>
+    </nav>
+    <button class="btn btn-ghost" (click)="logout()">Logout</button>
+  </header>
+
+  <main class="content">
+    <div class="content-header">
+      <div>
+        <h1>My Todos</h1>
+        <p>Search, filter and organize everything on your plate.</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCreateForm()">+ New todo</button>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="alert-error">{{ errorMessage() }}</div>
+    }
+
+    <div class="toolbar card">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search todos by title or description…"
+        (input)="onSearchInput($any($event.target).value)">
+
+      <div class="filter-group">
+        <button
+          class="chip"
+          [class.chip-active]="statusFilter() === ''"
+          (click)="onFilterChange('')">All</button>
+        <button
+          class="chip"
+          [class.chip-active]="statusFilter() === 'PENDING'"
+          (click)="onFilterChange('PENDING')">Pending</button>
+        <button
+          class="chip"
+          [class.chip-active]="statusFilter() === 'COMPLETED'"
+          (click)="onFilterChange('COMPLETED')">Completed</button>
+      </div>
+
+      <div class="sort-group">
+        <span class="sort-label">Sort by</span>
+        <button
+          class="chip"
+          [class.chip-active]="sortBy() === 'dueDate'"
+          (click)="onSortChange('dueDate')">
+          Due date @if (sortBy() === 'dueDate') { {{ sortDirection() === 'asc' ? '↑' : '↓' }} }
+        </button>
+        <button
+          class="chip"
+          [class.chip-active]="sortBy() === 'priority'"
+          (click)="onSortChange('priority')">
+          Priority @if (sortBy() === 'priority') { {{ sortDirection() === 'asc' ? '↑' : '↓' }} }
+        </button>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <app-loading-spinner label="Loading your todos…"></app-loading-spinner>
+    } @else if (isEmpty()) {
+      <div class="empty-state card">
+        <span class="empty-mark"></span>
+        <h3>No todos found</h3>
+        <p>Try adjusting your filters, or create your first todo to get started.</p>
+        <button class="btn btn-primary" (click)="openCreateForm()">+ New todo</button>
+      </div>
+    } @else {
+      <ul class="todo-list">
+        @for (todo of todos(); track todo.id) {
+          <li class="todo-item card" [class.completed]="todo.status === 'COMPLETED'">
+            <button
+              class="check-btn"
+              [class.checked]="todo.status === 'COMPLETED'"
+              (click)="toggleStatus(todo)"
+              [attr.aria-label]="todo.status === 'COMPLETED' ? 'Mark as pending' : 'Mark as completed'">
+              @if (todo.status === 'COMPLETED') { ✓ }
+            </button>
+
+            <div class="todo-body">
+              <div class="todo-title-row">
+                <span class="todo-title">{{ todo.title }}</span>
+                <span class="badge" [ngClass]="'priority-' + todo.priority.toLowerCase()">{{ todo.priority }}</span>
+              </div>
+              @if (todo.description) {
+                <p class="todo-desc">{{ todo.description }}</p>
+              }
+              @if (todo.dueDate) {
+                <span class="due-date">Due {{ todo.dueDate | date: 'MMM d, y' }}</span>
+              }
+            </div>
+
+            <div class="todo-actions">
+              <button class="icon-btn" (click)="openEditForm(todo)" aria-label="Edit todo">Edit</button>
+              <button class="icon-btn danger" (click)="askDelete(todo)" aria-label="Delete todo">Delete</button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </main>
+</div>
+
+@if (showForm()) {
+  <app-todo-form
+    [todo]="editingTodo()"
+    [saving]="saving()"
+    (save)="saveTodo($event)"
+    (cancel)="closeForm()">
+  </app-todo-form>
+}
+
+@if (confirmDeleteTodo(); as todo) {
+  <div class="modal-backdrop" (click)="cancelDelete()">
+    <div class="confirm-card card" (click)="$event.stopPropagation()">
+      <h3>Delete this todo?</h3>
+      <p>"{{ todo.title }}" will be permanently removed. This can't be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button class="btn btn-danger" [disabled]="deletingId() === todo.id" (click)="confirmDelete()">
+          {{ deletingId() === todo.id ? 'Deleting…' : 'Delete' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
