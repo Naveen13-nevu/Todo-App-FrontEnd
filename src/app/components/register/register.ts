@@ -78,10 +78,12 @@ export class Register {
         confirmPassword: confirmPassword!
       })
       .subscribe({
-        next: () => {
-          this.loading.set(false);
-          this.router.navigate(['/dashboard']);
-        },
+  next: () => {
+    this.loading.set(false);
+    this.router.navigate(['/login'], {
+      queryParams: { registered: 'true' }
+    });
+  },
         error: (err: HttpErrorResponse) => {
           this.loading.set(false);
           const apiError = err.error as ApiErrorResponse;
